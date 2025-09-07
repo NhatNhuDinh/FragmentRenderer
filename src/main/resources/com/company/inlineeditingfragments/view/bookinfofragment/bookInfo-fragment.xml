@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fragment xmlns="http://jmix.io/schema/flowui/fragment">
+    <data>
+        <!-- Container sẽ nhận item của hàng nhờ @RendererItemContainer -->
+        <instance id="booksDc" class="com.company.inlineeditingfragments.entity.Book">
+            <fetchPlan extends="_base">
+                <property name="author" fetchPlan="_base"/>
+            </fetchPlan>
+        </instance>
+        <collection id="authorsDc" class="com.company.inlineeditingfragments.entity.Author">
+            <fetchPlan extends="_base"/>
+            <loader id="authorsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Author e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <content>
+        <formLayout id="root" dataContainer="booksDc">
+            <vbox>
+                <vbox>
+                    <textField property="title" clearButtonVisible="true" width="100%"/>
+                    <entityComboBox id="authorsComboBox" itemsContainer="authorsDc" dataContainer="booksDc"
+                                    property="author" width="100%">
+                        <actions>
+                            <action id="entityClear" type="entity_clear"/>
+                            <action id="entityLookup" type="entity_lookup"/>
+                            <action id="entityOpen" type="entity_open"/>
+                        </actions>
+                    </entityComboBox>
+
+                </vbox>
+            </vbox>
+        </formLayout>
+    </content>
+</fragment>

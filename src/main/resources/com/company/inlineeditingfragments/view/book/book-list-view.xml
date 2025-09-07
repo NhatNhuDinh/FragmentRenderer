@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://bookListView.title"
+      focusComponent="booksDataGrid">
+    <data>
+        <!-- Loader để reload từ DB -->
+        <collection id="booksDc"
+                    class="com.company.inlineeditingfragments.entity.Book">
+            <fetchPlan extends="_base"/>
+            <loader id="booksDl">
+                <query>
+                    <![CDATA[select b from Book b order by b.title]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
+    <layout>
+        <vbox width="100%">
+            <hbox id="buttonsPanel" classNames="buttons-panel">
+                <button id="createButton" action="booksDataGrid.createAction"/>
+                <button id="editButton" action="booksDataGrid.editAction"/>
+                <button id="removeButton" action="booksDataGrid.removeAction"/>
+            </hbox>
+            <dataGrid id="booksDataGrid"
+                      dataContainer="booksDc"
+                      width="100%"
+                      minHeight="20em"
+                      allRowsVisible="true">
+                <actions>
+                    <action id="createAction" type="list_create"/>
+                    <action id="editAction" type="list_edit"/>
+                    <action id="removeAction" type="list_remove"/>
+                </actions>
+                <columns resizable="true">
+                    <column key="card" header="Book Information">
+                        <fragmentRenderer class="com.company.inlineeditingfragments.view.bookinfofragment.BookInfoFragment"/>
+                    </column>
+                    <column key="detail" header="Book Detail"/>
+                </columns>
+            </dataGrid>
+            <hbox classNames="buttons-panel">
+                <button id="okBtn" text="OK" icon="CHECK" themeNames="primary"/>
+                <button id="cancelBtn" text="Cancel" icon="CLOSE"/>
+            </hbox>
+        </vbox>
+
+    </layout>
+</view>

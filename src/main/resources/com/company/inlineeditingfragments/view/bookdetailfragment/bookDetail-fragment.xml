@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fragment xmlns="http://jmix.io/schema/flowui/fragment">
+    <data>
+        <!-- Container sẽ nhận item của hàng nhờ @RendererItemContainer -->
+        <instance id="booksDc" class="com.company.inlineeditingfragments.entity.Book">
+            <fetchPlan extends="_base">
+                <property name="author" fetchPlan="_base"/>
+            </fetchPlan>
+        </instance>
+    </data>
+    <content>
+        <formLayout id="root" dataContainer="booksDc" classNames="book-detail-form">
+            <vbox spacing="true">
+                <!-- Publication Date Section with Icon -->
+                <hbox classNames="date-section" alignItems="CENTER" spacing="true">
+                    <span id="dateIcon" classNames="date-icon" text="📅"/>
+                    <datePicker property="publicDate"
+                                clearButtonVisible="true"
+                                classNames="date-picker"
+                                width="160px"/>
+                    <span id="dateStatus"
+                          classNames="date-status-badge"
+                          text="Published"
+                          visible="false"/>
+                </hbox>
+
+                <!-- Price and Quantity Section with Icons -->
+                <hbox spacing="true" alignItems="CENTER">
+                    <div classNames="price-section">
+                        <span id="priceIcon" classNames="price-icon" text="💰"/>
+                        <textField property="price"
+                                   clearButtonVisible="true"
+                                   classNames="price-field"
+                                   width="100px"
+                                   placeholder="0.00"/>
+                        <span id="priceLabel" classNames="currency-label" text="$"/>
+                    </div>
+
+                    <div classNames="quantity-section">
+                        <span id="quantityIcon" classNames="quantity-icon" text="📦"/>
+                        <textField property="quantity"
+                                   clearButtonVisible="true"
+                                   classNames="quantity-field"
+                                   width="80px"
+                                   placeholder="0"/>
+                        <span id="stockBadge"
+                              classNames="stock-badge"
+                              text="In Stock"
+                              visible="false"/>
+                    </div>
+                </hbox>
+
+                <!-- Dynamic Status Bar -->
+                <div id="statusBar" classNames="status-bar" visible="false">
+                    <span id="statusIcon" classNames="status-icon" text="🚀"/>
+                    <span id="statusText" classNames="status-text" text="Coming Soon"/>
+                </div>
+            </vbox>
+        </formLayout>
+    </content>
+</fragment>
