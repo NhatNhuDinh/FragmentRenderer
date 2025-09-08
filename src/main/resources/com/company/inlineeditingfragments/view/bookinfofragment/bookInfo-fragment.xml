@@ -6,7 +6,8 @@
             <fetchPlan extends="_base"/>
         </instance>
         <collection id="authorsDc" class="com.company.inlineeditingfragments.entity.Author">
-            <fetchPlan extends="_base"/>
+            <fetchPlan extends="_base">
+            </fetchPlan>
             <loader id="authorsDl" readOnly="true">
                 <query>
                     <![CDATA[select e from Author e]]>
@@ -16,10 +17,12 @@
     </data>
     <content>
         <formLayout id="root" dataContainer="booksDc">
-            <vbox>
+            <hbox width="100%">
                 <vbox>
                     <textField property="title" clearButtonVisible="true" width="100%"/>
-                    <entityComboBox id="authorsComboBox" itemsContainer="authorsDc" dataContainer="booksDc"
+                    <entityComboBox id="authorsComboBox"
+                                    itemsContainer="authorsDc"
+                                    dataContainer="booksDc"
                                     property="author" width="100%">
                         <actions>
                             <action id="entityClear" type="entity_clear"/>
@@ -27,9 +30,16 @@
                             <action id="entityOpen" type="entity_open"/>
                         </actions>
                     </entityComboBox>
-
                 </vbox>
-            </vbox>
+                <vbox>
+                    <textField id="authorDateOfBirth"
+                               dataContainer="booksDc" property="author.dateOfBirth"
+                               readOnly="true" width="100%"/>
+                    <textField id="authorAddress"
+                               dataContainer="booksDc" property="author.address"
+                               readOnly="true" width="100%"/>
+                </vbox>
+            </hbox>
         </formLayout>
     </content>
 </fragment>
