@@ -23,6 +23,8 @@
                 <responsiveStep minWidth="40em" columns="2"/>
             </responsiveSteps>
             <textField id="nameField" property="name"/>
+            <datePicker id="dateOfBirthField" property="dateOfBirth" clearButtonVisible="true"/>
+            <textField id="addressField" property="address" colspan="2"/>
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>
