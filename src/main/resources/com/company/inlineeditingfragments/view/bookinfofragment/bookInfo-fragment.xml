@@ -3,9 +3,7 @@
     <data>
         <!-- Container sẽ nhận item của hàng nhờ @RendererItemContainer -->
         <instance id="booksDc" class="com.company.inlineeditingfragments.entity.Book">
-            <fetchPlan extends="_base">
-                <property name="author" fetchPlan="_base"/>
-            </fetchPlan>
+            <fetchPlan extends="_base"/>
         </instance>
         <collection id="authorsDc" class="com.company.inlineeditingfragments.entity.Author">
             <fetchPlan extends="_base"/>
