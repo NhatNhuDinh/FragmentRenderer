@@ -36,9 +36,7 @@
                     <action id="removeAction" type="list_remove"/>
                 </actions>
                 <columns resizable="true">
-                    <column key="card" header="Book Information">
-                        <fragmentRenderer class="com.company.inlineeditingfragments.view.bookinfofragment.BookInfoFragment"/>
-                    </column>
+                    <column key="card" header="Book Information"/>
                     <column key="detail" header="Book Detail"/>
                 </columns>
             </dataGrid>

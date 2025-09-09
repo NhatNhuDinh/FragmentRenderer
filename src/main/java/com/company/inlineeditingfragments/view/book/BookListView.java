@@ -1,9 +1,12 @@
 package com.company.inlineeditingfragments.view.book;
 
 import com.company.inlineeditingfragments.entity.Book;
+import com.company.inlineeditingfragments.utils.ComponentUtil;
 import com.company.inlineeditingfragments.view.bookdetailfragment.BookDetailFragment;
+import com.company.inlineeditingfragments.view.bookinfofragment.BookInfoFragment;
 import com.company.inlineeditingfragments.view.main.MainView;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
@@ -12,6 +15,7 @@ import io.jmix.flowui.Fragments;
 import io.jmix.flowui.Notifications;
 import io.jmix.flowui.UiComponents;
 import io.jmix.flowui.component.grid.DataGrid;
+import io.jmix.flowui.fragmentrenderer.FragmentRenderer;
 import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.CollectionContainer;
@@ -22,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Route(value = "books", layout = MainView.class)
@@ -47,7 +53,7 @@ public class BookListView extends StandardListView<Book> {
     protected Notifications notifications;
 
     @Autowired
-    private Fragments fragments;
+    private ComponentUtil componentUtil;
 
     @Subscribe("booksDataGrid.createAction")
     protected void onBookDataGridCreate(ActionPerformedEvent event) {
@@ -105,50 +111,80 @@ public class BookListView extends StandardListView<Book> {
         notifications.create(msg).withType(Notifications.Type.WARNING).show();
     }
 
+
+    @Supply(to = "booksDataGrid.card", subject = "renderer")
+    private Renderer<Book> booksDataGridCardRenderer() {
+        return new ComponentRenderer<>(book -> {
+            BookInfoFragment fragment = (BookInfoFragment) componentUtil.getOrCreateFragment(
+                    "card", // Sử dụng cache key riêng biệt
+                    book.getId().toString(),
+                    book,
+                    this,
+                    BookInfoFragment.class
+            );
+            fragment.setItem(book);
+            return fragment;
+        });
+    }
+
     @Supply(to = "booksDataGrid.detail", subject = "renderer")
     private Renderer<Book> booksDataGridDetailRenderer() {
         return new ComponentRenderer<>(book -> {
-            BookDetailFragment fragment = fragments.create(this, BookDetailFragment.class);
+            BookDetailFragment fragment = (BookDetailFragment) componentUtil.getOrCreateFragment(
+                    "detail", // Sử dụng cache key riêng biệt
+                    book.getId().toString(),
+                    book,
+                    this,
+                    BookDetailFragment.class
+            );
             fragment.setItem(book);
-
-            // ========== CODE RENDERER ENHANCEMENTS ==========
-
-            // 2. Add hover effect with tooltip
-            fragment.getContent().getElement().addEventListener("mouseenter", event -> {
-                String tooltip = generateBookTooltip(book);
-                fragment.getContent().getElement().setProperty("title", tooltip);
-                fragment.getContent().getElement().getStyle().set("transform", "scale(1.02)");
-                fragment.getContent().getElement().getStyle().set("transition", "transform 0.2s ease");
-            });
-
-            fragment.getContent().getElement().addEventListener("mouseleave", event -> {
-                fragment.getContent().getElement().getStyle().set("transform", "scale(1)");
-            });
-
-            // 3. Add special styling based on business logic
-            LocalDate today = LocalDate.now();
-            if (book.getPublicDate() != null && book.getPublicDate().isAfter(today)) {
-                // Upcoming book - add pulsing border
-                fragment.getContent().getElement().getStyle()
-                        .set("box-shadow", "0 0 10px rgba(102, 126, 234, 0.6)")
-                        .set("animation", "pulse-border 3s infinite");
-            }
-
-            // 4. Add conditional badges
-            if (isNewRelease(book)) {
-                addNewReleaseBadge(fragment);
-            }
-
-            if (isBestseller(book)) {
-                addBestsellerBadge(fragment);
-            }
-
-            // 5. Add double-click for quick edit
-            fragment.getContent().getElement().addEventListener("dblclick", event -> {
-                openQuickEditDialog(book);
-            });
-
+            applyDetailEnhancements(fragment, book);
             return fragment;
+        });
+    }
+
+    // Tách riêng method cho enhancements để tránh apply multiple lần
+    private void applyDetailEnhancements(BookDetailFragment fragment, Book book) {
+        // Kiểm tra xem đã apply enhancements chưa
+        if (fragment.getContent().getElement().hasAttribute("enhanced")) {
+            return; // Đã enhance rồi, không làm gì thêm
+        }
+
+        // Đánh dấu đã enhance
+        fragment.getContent().getElement().setAttribute("enhanced", "true");
+
+        // 2. Add hover effect with tooltip
+        fragment.getContent().getElement().addEventListener("mouseenter", event -> {
+            String tooltip = generateBookTooltip(book);
+            fragment.getContent().getElement().setProperty("title", tooltip);
+            fragment.getContent().getElement().getStyle().set("transform", "scale(1.02)");
+            fragment.getContent().getElement().getStyle().set("transition", "transform 0.2s ease");
+        });
+
+        fragment.getContent().getElement().addEventListener("mouseleave", event -> {
+            fragment.getContent().getElement().getStyle().set("transform", "scale(1)");
+        });
+
+        // 3. Add special styling based on business logic
+        LocalDate today = LocalDate.now();
+        if (book.getPublicDate() != null && book.getPublicDate().isAfter(today)) {
+            fragment.getContent().getElement().getStyle()
+                    .set("box-shadow", "0 0 10px rgba(102, 126, 234, 0.6)")
+                    .set("animation", "pulse-border 3s infinite");
+        }
+
+        // 4. Add conditional badges
+        if (isNewRelease(book)) {
+            addNewReleaseBadge(fragment);
+        }
+
+        if (isBestseller(book)) {
+            addBestsellerBadge(fragment);
+        }
+
+        // 5. Add double-click for quick edit
+        fragment.getContent().getElement().addEventListener("dblclick", event -> {
+            openQuickEditDialog(book);
         });
     }
 
@@ -214,6 +250,9 @@ public class BookListView extends StandardListView<Book> {
 
         // Here you could open a dialog, navigate to edit view, etc.
     }
+
+
+
 
 
 

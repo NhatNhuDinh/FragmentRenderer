@@ -19,11 +19,11 @@
         <formLayout id="root" dataContainer="booksDc">
             <hbox width="100%">
                 <vbox>
-                    <textField property="title" clearButtonVisible="true" width="100%"/>
+                    <textField property="title" clearButtonVisible="true" width="20em"/>
                     <entityComboBox id="authorsComboBox"
                                     itemsContainer="authorsDc"
                                     dataContainer="booksDc"
-                                    property="author" width="100%">
+                                    property="author" width="20em">
                         <actions>
                             <action id="entityClear" type="entity_clear"/>
                             <action id="entityLookup" type="entity_lookup"/>
